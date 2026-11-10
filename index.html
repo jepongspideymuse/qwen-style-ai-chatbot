@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Qwen-Style AI Chatbot</title>
+<style>
+:root{
+  --bg:#0f1115; --bg2:#161a22; --sidebar:#131722; --border:#262d3d;
+  --text:#e8ecf3; --muted:#9aa4b8; --accent:#7c5cff; --accent2:#4da3ff;
+  --bubble-ai:#1c2230; --bubble-user:#7c5cff; --input:#1a2030;
+}
+[data-theme="light"]{
+  --bg:#f5f6fa; --bg2:#ffffff; --sidebar:#ffffff; --border:#e2e6ef;
+  --text:#1a2030; --muted:#6b7690; --accent:#6c4dff; --accent2:#2f80ff;
+  --bubble-ai:#eef1f7; --bubble-user:#6c4dff; --input:#f0f2f8;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:var(--bg);color:var(--text);height:100vh;display:flex;overflow:hidden}
+aside{width:280px;background:var(--sidebar);border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0}
+aside.hidden{margin-left:-280px}
+.side-top{padding:14px;display:flex;gap:8px}
+.btn{border:1px solid var(--border);background:var(--bg2);color:var(--text);border-radius:10px;padding:10px 12px;cursor:pointer;font-size:14px}
+.btn-primary{flex:1;background:linear-gradient(135deg,var(--accent),var(--accent2));border:none;color:#fff;font-weight:600}
+.search{margin:0 14px 10px;background:var(--input);border:1px solid var(--border);border-radius:10px;padding:9px 12px;color:var(--text);width:calc(100% - 28px);outline:none}
+.chat-list{flex:1;overflow-y:auto;padding:0 10px 10px;display:flex;flex-direction:column;gap:6px}
+.chat-item{padding:11px 12px;border-radius:10px;cursor:pointer;border:1px solid transparent;display:flex;justify-content:space-between;align-items:center;gap:8px}
+.chat-item:hover{background:var(--bg2)}
+.chat-item.active{background:var(--bg2);border-color:var(--border)}
+.chat-item span.title{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:14px;flex:1}
+main{flex:1;display:flex;flex-direction:column;min-width:0}
+header{display:flex;align-items:center;gap:10px;padding:12px 18px;border-bottom:1px solid var(--border);background:var(--bg2)}
+.icon-btn{background:transparent;border:1px solid var(--border);color:var(--text);border-radius:9px;padding:8px 10px;cursor:pointer}
+.model-wrap{position:relative}
+#modelBtn{display:flex;align-items:center;gap:8px;font-weight:700;font-size:16px;background:transparent;border:none;color:var(--text);cursor:pointer;padding:6px 8px}
+.dropdown{position:absolute;top:42px;left:0;width:300px;background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:8px;display:none;z-index:20}
+.dropdown.open{display:block}
+.model-opt{padding:10px 12px;border-radius:10px;cursor:pointer}
+.model-opt:hover{background:var(--input)}
+.model-opt b{display:block;font-size:14px}
+.model-opt i{font-style:normal;color:var(--muted);font-size:12px}
+#thread{flex:1;overflow-y:auto;padding:28px 18px;display:flex;flex-direction:column;gap:18px;max-width:860px;width:100%;margin:0 auto}
+.welcome{text-align:center;margin:auto;max-width:560px}
+.welcome h1{font-size:32px;margin:14px 0 8px}
+.welcome p{color:var(--muted);margin-bottom:18px}
+.logo{width:56px;height:56px;border-radius:16px;background:linear-gradient(135deg,var(--accent),var(--accent2));display:inline-flex;align-items:center;justify-content:center;font-size:28px;color:#fff;font-weight:800}
+.sugs{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px}
+.sug{border:1px solid var(--border);background:var(--bg2);border-radius:12px;padding:12px;text-align:left;color:var(--text);cursor:pointer;font-size:13px}
+.msg{display:flex;gap:12px;align-items:flex-start}
+.msg.user{flex-direction:row-reverse}
+.avatar{width:32px;height:32px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-weight:700}
+.ai .avatar{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff}
+.user .avatar{background:#2a3348;color:#fff}
+.bubble{max-width:78%;padding:12px 15px;border-radius:16px;line-height:1.55;font-size:14.5px;white-space:pre-wrap;word-wrap:break-word}
+.ai .bubble{background:var(--bubble-ai);border:1px solid var(--border);border-top-left-radius:6px}
+.user .bubble{background:var(--bubble-user);color:#fff;border-top-right-radius:6px}
+.meta{font-size:11px;color:var(--muted);margin-top:6px;display:flex;gap:10px}
+.meta button{background:none;border:none;color:var(--muted);cursor:pointer;font-size:11px}
+pre{background:#0b0e14;color:#d8e2ff;padding:12px;border-radius:10px;overflow-x:auto;margin:8px 0;font-size:13px}
+code.inline{background:rgba(124,92,255,.18);padding:2px 6px;border-radius:6px;font-size:13px}
+.typing{display:inline-flex;gap:5px;padding:14px 16px}
+.typing span{width:7px;height:7px;border-radius:50%;background:var(--muted);animation:b 1.2s infinite}
+.typing span:nth-child(2){animation-delay:.15s}.typing span:nth-child(3){animation-delay:.3s}
+@keyframes b{0%,60%,100%{transform:none;opacity:.4}30%{transform:translateY(-5px);opacity:1}}
+footer{padding:14px 18px 18px}
+.composer{max-width:860px;margin:0 auto;background:var(--bg2);border:1px solid var(--border);border-radius:18px;padding:10px}
+textarea{width:100%;background:transparent;border:none;outline:none;color:var(--text);resize:none;font-size:15px;font-family:inherit;padding:6px 8px}
+.bar{display:flex;align-items:center;justify-content:space-between;padding-top:4px}
+.hint{color:var(--muted);font-size:12px}
+.send{width:36px;height:36px;border-radius:50%;border:none;cursor:pointer;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;font-size:17px}
+.chips{max-width:860px;margin:0 auto 10px;display:flex;gap:8px;flex-wrap:wrap}
+.chip{border:1px solid var(--border);background:var(--bg2);color:var(--text);border-radius:999px;padding:7px 13px;font-size:13px;cursor:pointer}
+@media(max-width:760px){aside{position:fixed;height:100%;z-index:50}.sugs{grid-template-columns:1fr}.bubble{max-width:88%}}
+</style>
+</head>
+<body>
+<aside id="sidebar">
+  <div class="side-top"><button class="btn-primary btn" id="newChat">+ New Chat</button></div>
+  <input class="search" id="search" placeholder="Search chats..." />
+  <div class="chat-list" id="chatList"></div>
+  <div style="padding:12px 14px;border-top:1px solid var(--border);display:flex;gap:8px">
+    <button class="btn" id="clearAll" style="flex:1">Clear all</button>
+    <button class="btn" id="exportBtn" style="flex:1">Export</button>
+  </div>
+</aside>
+<main>
+  <header>
+    <button class="icon-btn" id="menuBtn">☰</button>
+    <div class="model-wrap">
+      <button id="modelBtn">🤖 <span id="modelName">Qwen-Max</span> ▾</button>
+      <div class="dropdown" id="modelDrop"></div>
+    </div>
+    <div style="flex:1"></div>
+    <button class="icon-btn" id="themeBtn">🌙</button>
+    <button class="icon-btn" id="clearChat">🗑</button>
+  </header>
+  <div id="thread"></div>
+  <footer>
+    <div class="chips" id="chips"></div>
+    <div class="composer">
+      <textarea id="input" rows="1" placeholder="Ask anything... (Enter to send, Shift+Enter for new line)"></textarea>
+      <div class="bar"><span class="hint" id="count">0 chars • offline mock engine</span><button class="send" id="sendBtn">➤</button></div>
+    </div>
+  </footer>
+</main>
+<script>
+const MODELS=[{id:'Qwen-Max',desc:'Most capable — reasoning, code & long context'},{id:'Qwen-Plus',desc:'Balanced speed & quality'},{id:'Qwen-Turbo',desc:'Fastest — instant answers'},{id:'Qwen-VL',desc:'Vision-language style detail'}];
+let chats=[{id:Date.now(),title:'New conversation',messages:[],model:'Qwen-Max'}];
+let activeId=chats[0].id, currentModel='Qwen-Max', streaming=false, stopFlag=false, userName=null, msgCount=0;
+const $=id=>document.getElementById(id);
+const thread=$('thread'), input=$('input'), list=$('chatList');
+const active=()=>chats.find(c=>c.id===activeId);
+function renderList(filter=''){
+  list.innerHTML='';
+  chats.filter(c=>c.title.toLowerCase().includes(filter.toLowerCase())).forEach(c=>{
+    const d=document.createElement('div');
+    d.className='chat-item'+(c.id===activeId?' active':'');
+    d.innerHTML='<span class="title">'+escapeHtml(c.title)+'</span>';
+    d.onclick=()=>{activeId=c.id;currentModel=c.model||'Qwen-Max';$('modelName').textContent=currentModel;renderList();renderThread();};
+    d.ondblclick=e=>{e.stopPropagation();const t=prompt('Rename chat:',c.title);if(t){c.title=t.slice(0,60);renderList();}};
+    list.appendChild(d);
+  });
+}
+$('newChat').onclick=()=>{const c={id:Date.now(),title:'New conversation',messages:[],model:currentModel};chats.unshift(c);activeId=c.id;renderList();renderThread();};
+$('clearAll').onclick=()=>{if(!confirm('Delete all chats?'))return;chats=[{id:Date.now(),title:'New conversation',messages:[],model:currentModel}];activeId=chats[0].id;renderList();renderThread();};
+$('search').oninput=e=>renderList(e.target.value);
+$('exportBtn').onclick=()=>{const c=active();const txt=c.messages.map(m=>(m.role==='user'?'YOU: ':'AI: ')+m.text).join('\n\n');const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([txt],{type:'text/plain'}));a.download='chat.txt';a.click();};
+$('menuBtn').onclick=()=>$('sidebar').classList.toggle('hidden');
+function renderModels(){
+  const dd=$('modelDrop');dd.innerHTML='';
+  MODELS.forEach(m=>{const o=document.createElement('div');o.className='model-opt';o.innerHTML='<b>'+m.id+'</b><i>'+m.desc+'</i>';o.onclick=()=>{currentModel=m.id;active().model=m.id;$('modelName').textContent=m.id;dd.classList.remove('open');};dd.appendChild(o);});
+}
+$('modelBtn').onclick=()=>$('modelDrop').classList.toggle('open');
+$('themeBtn').onclick=()=>{const h=document.documentElement;const dark=h.dataset.theme!=='light';h.dataset.theme=dark?'light':'dark';$('themeBtn').textContent=dark?'☀️':'🌙';};
+$('clearChat').onclick=()=>{active().messages=[];renderThread();};
+function escapeHtml(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function fmt(t){let h=escapeHtml(t);h=h.replace(/```(\w*)\n?([\s\S]*?)```/g,(m,l,c)=>'<pre>'+c+'</pre>');h=h.replace(/\*\*(.+?)\*\*/g,'<b>$1</b>');h=h.replace(/`([^`]+)`/g,'<code class="inline">$1</code>');h=h.replace(/\n/g,'<br>');return h;}
+function renderThread(){
+  const c=active();thread.innerHTML='';
+  if(!c.messages.length){
+    thread.innerHTML='<div class="welcome"><div class="logo">Q</div><h1>Hi, I am Qwen-style AI</h1><p>Ask me anything — instant offline replies, no API key needed.</p><div class="sugs"><button class="sug" data-q="Write a Python function to check prime numbers">Python prime checker</button><button class="sug" data-q="Explain black holes like I am 5">Explain black holes simply</button><button class="sug" data-q="Tell me a joke">Tell me a joke</button><button class="sug" data-q="What can you do?">What can you do?</button></div></div>';
+    thread.querySelectorAll('.sug').forEach(b=>b.onclick=()=>{input.value=b.dataset.q;send();});
+  } else {
+    c.messages.forEach(m=>{const row=document.createElement('div');row.className='msg '+(m.role==='user'?'user':'ai');row.innerHTML='<div class="avatar">'+(m.role==='user'?'🧑':'Q')+'</div><div><div class="bubble">'+fmt(m.text)+'</div><div class="meta"><span>'+m.time+'</span><span>• '+(m.model||currentModel)+'</span></div></div>';thread.appendChild(row);});
+  }
+  thread.scrollTop=thread.scrollHeight;renderChips();
+}
+function renderChips(){const items=['Summarize this','Give an example','Explain simply','Write code'];$('chips').innerHTML='';if(!active().messages.length)return;items.forEach(t=>{const b=document.createElement('button');b.className='chip';b.textContent=t;b.onclick=()=>{input.value=t;send();};$('chips').appendChild(b);});}
+function mockReply(q){
+  const s=q.toLowerCase().trim();
+  const nm=q.match(/my name is (\w+)/i);if(nm){userName=nm[1];return 'Nice to meet you, **'+userName+'**! What next?';}
+  if(/^(hi|hello|hey|yo|good (morning|afternoon|evening))\b/.test(s))return 'Hello! I am your Qwen-style assistant on **['+currentModel+']** — fully offline. Ask me to explain, code, or brainstorm.';
+  if(s.includes('who are you'))return 'I am a **Qwen-style AI chatbot** demo on **['+currentModel+']** — single index.html with built-in mock engine.';
+  if(s.includes('what can you do')||s.includes('help'))return 'I can demo offline:\n- Answer questions\n- Write code (try "write python quicksort")\n- Math (try "12 * 18 + 5")\n- Jokes, time/date, explanations';
+  if(s.includes('time')||s.includes('date')||s.includes('today'))return '📅 Right now it is **'+new Date().toLocaleString()+'**.';
+  if(s.includes('joke'))return '😂 Why do programmers hate nature? Too many bugs!';
+  if(s.includes('weather'))return 'I cannot fetch live weather offline — tell me your city + plan and I will help you prepare.';
+  if(s.includes('black hole'))return 'Imagine space is a trampoline. A **black hole** is a super-heavy ball making a hole so deep not even light can climb out!';
+  if(s.includes('prime')||s.includes('python'))return 'Python prime checker:\n\n```python\ndef is_prime(n):\n    if n < 2: return False\n    for i in range(2,int(n**0.5)+1):\n        if n%i==0: return False\n    return True\n```';
+  if(s.includes('quicksort')||s.includes('sort'))return 'Quicksort:\n\n```python\ndef quicksort(a):\n    if len(a)<=1: return a\n    p=a[len(a)//2]\n    return quicksort([x for x in a if x<p])+[x for x in a if x==p]+quicksort([x for x in a if x>p])\n```';
+  if(/\d+\s*[+\-*/]\s*\d+/.test(s)){try{const expr=q.replace(/[^0-9+\-*/(). %]/g,'');const v=Function('"use strict";return('+expr+')')();return '🧮 **'+expr+' = '+v+'**';}catch(e){}}
+  msgCount++;return 'Got it: "'+q.slice(0,140)+'" ['+currentModel+' demo #'+msgCount+']. I can explain it, give an example, or turn it into code — which one?';
+}
+function now(){return new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});}
+async function send(){
+  const text=input.value.trim();if(!text||streaming)return;
+  const c=active();c.messages.push({role:'user',text,time:now(),model:currentModel});
+  if(c.title==='New conversation')c.title=text.slice(0,42);
+  input.value='';renderList();renderThread();
+  streaming=true;$('sendBtn').textContent='⏹';
+  const row=document.createElement('div');row.className='msg ai';row.innerHTML='<div class="avatar">Q</div><div><div class="bubble typing"><span></span><span></span><span></span></div></div>';thread.appendChild(row);thread.scrollTop=thread.scrollHeight;
+  await new Promise(r=>setTimeout(r,600));
+  const full=mockReply(text);let shown='';const words=full.split(/(\s+)/);
+  row.querySelector('.bubble').classList.remove('typing');row.querySelector('.bubble').innerHTML='';
+  for(let w of words){shown+=w;row.querySelector('.bubble').innerHTML=fmt(shown);thread.scrollTop=thread.scrollHeight;await new Promise(r=>setTimeout(r,25));}
+  row.remove();streaming=false;$('sendBtn').textContent='➤';
+  c.messages.push({role:'assistant',text:full,time:now(),model:currentModel});renderList();renderThread();
+}
+$('sendBtn').onclick=()=>send();
+input.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();send();}});
+input.addEventListener('input',()=>{input.style.height='auto';$('count').textContent=input.value.length+' chars • offline mock engine';});
+renderModels();renderList();renderThread();
+if(window.innerWidth<760)$('sidebar').classList.add('hidden');
+</script>
+</body>
+</html>
