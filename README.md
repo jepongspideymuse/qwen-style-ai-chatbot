@@ -46,10 +46,11 @@ No build step. No API key. No backend. Just open it and chat.
 
 ## 🌙 Dark mode
 
-- Theme toggle button (`#themeBtn.themebtn`, 🌙/☀️) in the header next to the model picker switches the whole page between dark and light themes.
-- Theming uses CSS variables on `:root,[data-theme="dark"]` for dark (default) plus `[data-theme="light"]` overrides for light — sidebar, header, thread, bubbles, and composer all switch together via `var()`.
-- Your choice is saved in `localStorage` key `fable_theme` (separate from `fable_chats`) and restored on load via `applyTheme(getTheme())`, so the theme persists across reloads/sessions.
-- Default is dark on first visit; click the toggle once for light (shows ☀️), click again to go back to dark (shows 🌙). Button has `title` + `aria-label="Toggle dark / light mode"`.
+- Click the theme toggle button (`#themeBtn.themebtn`, 🌙/☀️) in the header next to the model picker to switch the whole page between dark and light themes — sidebar, header, thread, bubbles, and composer all switch together.
+- Theming uses CSS variables on `:root,[data-theme="dark"]` for dark (default) plus `[data-theme="light"]` overrides for light, with `color-scheme` set per theme and smooth transitions.
+- Your choice is saved in `localStorage` key `fable_theme` (separate from chat history in `fable_chats`) and restored on every load via `applyTheme(getTheme())`, including an early `<script>` in `<head>` that applies the saved theme before first paint (no flash). It persists across reloads/sessions.
+- Default is dark on first visit; click once for light (button shows ☀️), click again to go back to dark (button shows 🌙). Button has `title` + `aria-label="Toggle dark / light mode"` for accessibility.
+- Existing features (chats, model picker, composer, mock replies) are unaffected — only colors change.
 
 ## 🚀 Usage
 
