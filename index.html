@@ -80,8 +80,9 @@ var thread=document.getElementById('thread'),inp=document.getElementById('inp'),
 var chats=[],aid=null;
 try{chats=JSON.parse(localStorage.getItem('fable_chats')||'[]')}catch(e){chats=[]}
 var themeBtn=document.getElementById('themeBtn');
-function getTheme(){try{return localStorage.getItem('fable_theme')||'dark'}catch(e){return 'dark'}}
-function applyTheme(t){document.documentElement.setAttribute('data-theme',t);if(themeBtn)themeBtn.textContent=(t==='light'?'☀️':'🌙');try{localStorage.setItem('fable_theme',t)}catch(e){}}
+function getTheme(){try{var v=localStorage.getItem('fable_theme');return (v==='light'||v==='dark')?v:'dark'}catch(e){return 'dark'}}
+function applyTheme(t){if(t!=='light'&&t!=='dark')t='dark';document.documentElement.setAttribute('data-theme',t);if(themeBtn){themeBtn.textContent=(t==='light'?'☀️':'🌙');themeBtn.setAttribute('aria-label',(t==='light'?'Switch to dark mode':'Switch to light mode'))}try{localStorage.setItem('fable_theme',t)}catch(e){}return t}
+function toggleTheme(){var cur=document.documentElement.getAttribute('data-theme')==='light'?'dark':'light';return applyTheme(cur)}
 applyTheme(getTheme());
 function save(){try{localStorage.setItem('fable_chats',JSON.stringify(chats))}catch(e){}}
 function uid(){return 'c'+Date.now().toString(36)+Math.floor(Math.random()*999)}
