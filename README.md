@@ -44,6 +44,13 @@ No build step. No API key. No backend. Just open it and chat.
 - Context-aware: uses your name if you tell it, remembers message count
 - Fallback smart echo with helpful follow-ups
 
+## 🌙 Dark mode
+
+- Theme toggle button in the header (next to the model picker) switches the whole page between dark and light themes.
+- Theming uses CSS variables on `:root` for dark (default) plus `[data-theme="light"]` overrides for light — sidebar, header, thread, bubbles, and composer all switch together.
+- Your choice is saved in `localStorage` (separate from `fable_chats`) and restored on reload, so the theme persists across sessions.
+- Default is dark on first visit; click the toggle once for light, click again to go back to dark.
+
 ## 🚀 Usage
 
 ### Option 1: Open locally
