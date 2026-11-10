@@ -1,186 +1,107 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Qwen-Style AI Chatbot</title>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Fable AI - Qwen Style Chatbot</title>
 <style>
-:root{
-  --bg:#0f1115; --bg2:#161a22; --sidebar:#131722; --border:#262d3d;
-  --text:#e8ecf3; --muted:#9aa4b8; --accent:#7c5cff; --accent2:#4da3ff;
-  --bubble-ai:#1c2230; --bubble-user:#7c5cff; --input:#1a2030;
-}
-[data-theme="light"]{
-  --bg:#f5f6fa; --bg2:#ffffff; --sidebar:#ffffff; --border:#e2e6ef;
-  --text:#1a2030; --muted:#6b7690; --accent:#6c4dff; --accent2:#2f80ff;
-  --bubble-ai:#eef1f7; --bubble-user:#6c4dff; --input:#f0f2f8;
-}
+:root{--bg:#0f1117;--bg2:#151927;--side:#131624;--bd:#262b3d;--tx:#e8eaf1;--mu:#9aa3b8;--ac:#7c6cff;--ai:#1d2236;--inp:#1a1e30}
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:var(--bg);color:var(--text);height:100vh;display:flex;overflow:hidden}
-aside{width:280px;background:var(--sidebar);border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0}
-aside.hidden{margin-left:-280px}
-.side-top{padding:14px;display:flex;gap:8px}
-.btn{border:1px solid var(--border);background:var(--bg2);color:var(--text);border-radius:10px;padding:10px 12px;cursor:pointer;font-size:14px}
-.btn-primary{flex:1;background:linear-gradient(135deg,var(--accent),var(--accent2));border:none;color:#fff;font-weight:600}
-.search{margin:0 14px 10px;background:var(--input);border:1px solid var(--border);border-radius:10px;padding:9px 12px;color:var(--text);width:calc(100% - 28px);outline:none}
-.chat-list{flex:1;overflow-y:auto;padding:0 10px 10px;display:flex;flex-direction:column;gap:6px}
-.chat-item{padding:11px 12px;border-radius:10px;cursor:pointer;border:1px solid transparent;display:flex;justify-content:space-between;align-items:center;gap:8px}
-.chat-item:hover{background:var(--bg2)}
-.chat-item.active{background:var(--bg2);border-color:var(--border)}
-.chat-item span.title{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:14px;flex:1}
-main{flex:1;display:flex;flex-direction:column;min-width:0}
-header{display:flex;align-items:center;gap:10px;padding:12px 18px;border-bottom:1px solid var(--border);background:var(--bg2)}
-.icon-btn{background:transparent;border:1px solid var(--border);color:var(--text);border-radius:9px;padding:8px 10px;cursor:pointer}
-.model-wrap{position:relative}
-#modelBtn{display:flex;align-items:center;gap:8px;font-weight:700;font-size:16px;background:transparent;border:none;color:var(--text);cursor:pointer;padding:6px 8px}
-.dropdown{position:absolute;top:42px;left:0;width:300px;background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:8px;display:none;z-index:20}
-.dropdown.open{display:block}
-.model-opt{padding:10px 12px;border-radius:10px;cursor:pointer}
-.model-opt:hover{background:var(--input)}
-.model-opt b{display:block;font-size:14px}
-.model-opt i{font-style:normal;color:var(--muted);font-size:12px}
-#thread{flex:1;overflow-y:auto;padding:28px 18px;display:flex;flex-direction:column;gap:18px;max-width:860px;width:100%;margin:0 auto}
-.welcome{text-align:center;margin:auto;max-width:560px}
-.welcome h1{font-size:32px;margin:14px 0 8px}
-.welcome p{color:var(--muted);margin-bottom:18px}
-.logo{width:56px;height:56px;border-radius:16px;background:linear-gradient(135deg,var(--accent),var(--accent2));display:inline-flex;align-items:center;justify-content:center;font-size:28px;color:#fff;font-weight:800}
-.sugs{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px}
-.sug{border:1px solid var(--border);background:var(--bg2);border-radius:12px;padding:12px;text-align:left;color:var(--text);cursor:pointer;font-size:13px}
-.msg{display:flex;gap:12px;align-items:flex-start}
-.msg.user{flex-direction:row-reverse}
-.avatar{width:32px;height:32px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-weight:700}
-.ai .avatar{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff}
-.user .avatar{background:#2a3348;color:#fff}
-.bubble{max-width:78%;padding:12px 15px;border-radius:16px;line-height:1.55;font-size:14.5px;white-space:pre-wrap;word-wrap:break-word}
-.ai .bubble{background:var(--bubble-ai);border:1px solid var(--border);border-top-left-radius:6px}
-.user .bubble{background:var(--bubble-user);color:#fff;border-top-right-radius:6px}
-.meta{font-size:11px;color:var(--muted);margin-top:6px;display:flex;gap:10px}
-.meta button{background:none;border:none;color:var(--muted);cursor:pointer;font-size:11px}
-pre{background:#0b0e14;color:#d8e2ff;padding:12px;border-radius:10px;overflow-x:auto;margin:8px 0;font-size:13px}
-code.inline{background:rgba(124,92,255,.18);padding:2px 6px;border-radius:6px;font-size:13px}
-.typing{display:inline-flex;gap:5px;padding:14px 16px}
-.typing span{width:7px;height:7px;border-radius:50%;background:var(--muted);animation:b 1.2s infinite}
-.typing span:nth-child(2){animation-delay:.15s}.typing span:nth-child(3){animation-delay:.3s}
-@keyframes b{0%,60%,100%{transform:none;opacity:.4}30%{transform:translateY(-5px);opacity:1}}
-footer{padding:14px 18px 18px}
-.composer{max-width:860px;margin:0 auto;background:var(--bg2);border:1px solid var(--border);border-radius:18px;padding:10px}
-textarea{width:100%;background:transparent;border:none;outline:none;color:var(--text);resize:none;font-size:15px;font-family:inherit;padding:6px 8px}
-.bar{display:flex;align-items:center;justify-content:space-between;padding-top:4px}
-.hint{color:var(--muted);font-size:12px}
-.send{width:36px;height:36px;border-radius:50%;border:none;cursor:pointer;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;font-size:17px}
-.chips{max-width:860px;margin:0 auto 10px;display:flex;gap:8px;flex-wrap:wrap}
-.chip{border:1px solid var(--border);background:var(--bg2);color:var(--text);border-radius:999px;padding:7px 13px;font-size:13px;cursor:pointer}
-@media(max-width:760px){aside{position:fixed;height:100%;z-index:50}.sugs{grid-template-columns:1fr}.bubble{max-width:88%}}
+body{font-family:Inter,system-ui,Arial,sans-serif;background:var(--bg);color:var(--tx);height:100vh;overflow:hidden}
+.app{display:flex;height:100vh}
+.sidebar{width:270px;background:var(--side);border-right:1px solid var(--bd);display:flex;flex-direction:column;padding:14px}
+.logo{width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,#7c6cff,#4cc9ff);display:flex;align-items:center;justify-content:center;font-weight:800;color:#fff}
+.brand{display:flex;gap:10px;align-items:center;padding:4px 4px 12px}.brand small{color:var(--mu);font-size:12px}
+.new{width:100%;background:var(--ac);color:#fff;border:0;border-radius:10px;padding:11px;font-weight:700;cursor:pointer}
+.search{margin:10px 0;background:var(--inp);border:1px solid var(--bd);border-radius:9px;padding:9px;color:var(--tx);width:100%;outline:none}
+.list{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:6px}
+.item{padding:10px 11px;border-radius:10px;cursor:pointer;display:flex;gap:8px;align-items:center;border:1px solid transparent;font-size:13.5px}
+.item:hover,.item.on{background:var(--ai);border-color:var(--bd)}
+.item span{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.item button{background:none;border:0;color:var(--mu);cursor:pointer}
+.main{flex:1;display:flex;flex-direction:column;min-width:0}
+.head{display:flex;gap:12px;align-items:center;padding:12px 16px;border-bottom:1px solid var(--bd);background:var(--bg2)}
+select{background:var(--inp);color:var(--tx);border:1px solid var(--bd);border-radius:9px;padding:8px}
+.sub{color:var(--mu);font-size:12px}
+#thread{flex:1;overflow-y:auto;padding:24px 16px;max-width:840px;width:100%;margin:0 auto;display:flex;flex-direction:column;gap:16px}
+.wel{text-align:center;color:var(--mu);padding:20px}.wel h1{color:var(--tx);margin:10px 0}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin-top:16px;text-align:left}
+.card{border:1px solid var(--bd);background:var(--bg2);border-radius:12px;padding:12px;cursor:pointer;font-size:13px;color:var(--mu)}
+.card b{display:block;color:var(--tx);margin-bottom:4px}
+.msg{display:flex;gap:10px}.av{width:32px;height:32px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-weight:700}
+.av.a{background:linear-gradient(135deg,#7c6cff,#4cc9ff);color:#fff}.av.u{background:#2a3350}
+.bu{max-width:78%;padding:12px 14px;border-radius:14px;line-height:1.55;font-size:14.5px;white-space:pre-wrap}
+.bu.a{background:var(--ai);border:1px solid var(--bd);border-top-left-radius:4px}
+.bu.u{background:var(--ac);color:#fff;border-top-right-radius:4px;margin-left:auto}
+.rowu{justify-content:flex-end}
+.typ{display:inline-flex;gap:5px}.typ i{width:7px;height:7px;border-radius:50%;background:var(--mu);animation:b 1s infinite}.typ i:nth-child(2){animation-delay:.15s}.typ i:nth-child(3){animation-delay:.3s}
+@keyframes b{50%{opacity:1;transform:translateY(-3px)}0%,100%{opacity:.3}}
+.compw{padding:12px 16px 8px}.comp{max-width:840px;margin:0 auto;background:var(--inp);border:1px solid var(--bd);border-radius:16px;padding:10px;display:flex;gap:10px}
+textarea{flex:1;background:transparent;border:0;outline:none;color:var(--tx);resize:none;font-size:15px;padding:8px;font-family:inherit}
+.send{background:var(--ac);border:0;color:#fff;width:40px;height:40px;border-radius:11px;cursor:pointer;font-size:17px}
+.hint{text-align:center;color:var(--mu);font-size:12px;padding:8px}
+#menu{display:none;background:none;border:1px solid var(--bd);color:var(--tx);border-radius:8px;padding:7px 10px}
+@media(max-width:800px){.sidebar{position:fixed;z-index:20;height:100vh;transform:translateX(-100%);transition:.25s}.sidebar.open{transform:none}#menu{display:block}.bu{max-width:88%}}
 </style>
 </head>
 <body>
-<aside id="sidebar">
-  <div class="side-top"><button class="btn-primary btn" id="newChat">+ New Chat</button></div>
-  <input class="search" id="search" placeholder="Search chats..." />
-  <div class="chat-list" id="chatList"></div>
-  <div style="padding:12px 14px;border-top:1px solid var(--border);display:flex;gap:8px">
-    <button class="btn" id="clearAll" style="flex:1">Clear all</button>
-    <button class="btn" id="exportBtn" style="flex:1">Export</button>
-  </div>
+<div class="app">
+<aside class="sidebar" id="side">
+<div class="brand"><div class="logo">F</div><div><b>Fable AI</b><br/><small>Qwen-style assistant</small></div></div>
+<button class="new" id="newBtn">+ New Chat</button>
+<input class="search" id="q" placeholder="Search chats..."/>
+<div class="list" id="list"></div>
+<div style="display:flex;gap:8px;margin-top:10px"><button class="new" id="clearBtn" style="background:transparent;border:1px solid var(--bd)">Clear</button></div>
 </aside>
-<main>
-  <header>
-    <button class="icon-btn" id="menuBtn">☰</button>
-    <div class="model-wrap">
-      <button id="modelBtn">🤖 <span id="modelName">Qwen-Max</span> ▾</button>
-      <div class="dropdown" id="modelDrop"></div>
-    </div>
-    <div style="flex:1"></div>
-    <button class="icon-btn" id="themeBtn">🌙</button>
-    <button class="icon-btn" id="clearChat">🗑</button>
-  </header>
-  <div id="thread"></div>
-  <footer>
-    <div class="chips" id="chips"></div>
-    <div class="composer">
-      <textarea id="input" rows="1" placeholder="Ask anything... (Enter to send, Shift+Enter for new line)"></textarea>
-      <div class="bar"><span class="hint" id="count">0 chars • offline mock engine</span><button class="send" id="sendBtn">➤</button></div>
-    </div>
-  </footer>
-</main>
+<div class="main">
+<div class="head">
+<button id="menu">&#9776;</button>
+<select id="model"><option>Fable-1 Flash</option><option selected>Fable-1 Pro</option><option>Fable Plus</option><option>Fable Max</option></select>
+<div><div><b>Fable AI Chat</b></div><div class="sub" id="st">Local assistant &bull; English / Tagalog &bull; online</div></div>
+</div>
+<div id="thread"></div>
+<div class="compw">
+<div class="comp"><textarea id="inp" rows="1" placeholder="Ask anything in English or Tagalog..."></textarea><button class="send" id="send">&#10148;</button></div>
+<div class="hint">Fable AI can make mistakes. Built-in local engine &mdash; no internet needed.</div>
+</div>
+</div>
+</div>
 <script>
-const MODELS=[{id:'Qwen-Max',desc:'Most capable — reasoning, code & long context'},{id:'Qwen-Plus',desc:'Balanced speed & quality'},{id:'Qwen-Turbo',desc:'Fastest — instant answers'},{id:'Qwen-VL',desc:'Vision-language style detail'}];
-let chats=[{id:Date.now(),title:'New conversation',messages:[],model:'Qwen-Max'}];
-let activeId=chats[0].id, currentModel='Qwen-Max', streaming=false, stopFlag=false, userName=null, msgCount=0;
-const $=id=>document.getElementById(id);
-const thread=$('thread'), input=$('input'), list=$('chatList');
-const active=()=>chats.find(c=>c.id===activeId);
-function renderList(filter=''){
-  list.innerHTML='';
-  chats.filter(c=>c.title.toLowerCase().includes(filter.toLowerCase())).forEach(c=>{
-    const d=document.createElement('div');
-    d.className='chat-item'+(c.id===activeId?' active':'');
-    d.innerHTML='<span class="title">'+escapeHtml(c.title)+'</span>';
-    d.onclick=()=>{activeId=c.id;currentModel=c.model||'Qwen-Max';$('modelName').textContent=currentModel;renderList();renderThread();};
-    d.ondblclick=e=>{e.stopPropagation();const t=prompt('Rename chat:',c.title);if(t){c.title=t.slice(0,60);renderList();}};
-    list.appendChild(d);
-  });
-}
-$('newChat').onclick=()=>{const c={id:Date.now(),title:'New conversation',messages:[],model:currentModel};chats.unshift(c);activeId=c.id;renderList();renderThread();};
-$('clearAll').onclick=()=>{if(!confirm('Delete all chats?'))return;chats=[{id:Date.now(),title:'New conversation',messages:[],model:currentModel}];activeId=chats[0].id;renderList();renderThread();};
-$('search').oninput=e=>renderList(e.target.value);
-$('exportBtn').onclick=()=>{const c=active();const txt=c.messages.map(m=>(m.role==='user'?'YOU: ':'AI: ')+m.text).join('\n\n');const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([txt],{type:'text/plain'}));a.download='chat.txt';a.click();};
-$('menuBtn').onclick=()=>$('sidebar').classList.toggle('hidden');
-function renderModels(){
-  const dd=$('modelDrop');dd.innerHTML='';
-  MODELS.forEach(m=>{const o=document.createElement('div');o.className='model-opt';o.innerHTML='<b>'+m.id+'</b><i>'+m.desc+'</i>';o.onclick=()=>{currentModel=m.id;active().model=m.id;$('modelName').textContent=m.id;dd.classList.remove('open');};dd.appendChild(o);});
-}
-$('modelBtn').onclick=()=>$('modelDrop').classList.toggle('open');
-$('themeBtn').onclick=()=>{const h=document.documentElement;const dark=h.dataset.theme!=='light';h.dataset.theme=dark?'light':'dark';$('themeBtn').textContent=dark?'☀️':'🌙';};
-$('clearChat').onclick=()=>{active().messages=[];renderThread();};
-function escapeHtml(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
-function fmt(t){let h=escapeHtml(t);h=h.replace(/```(\w*)\n?([\s\S]*?)```/g,(m,l,c)=>'<pre>'+c+'</pre>');h=h.replace(/\*\*(.+?)\*\*/g,'<b>$1</b>');h=h.replace(/`([^`]+)`/g,'<code class="inline">$1</code>');h=h.replace(/\n/g,'<br>');return h;}
-function renderThread(){
-  const c=active();thread.innerHTML='';
-  if(!c.messages.length){
-    thread.innerHTML='<div class="welcome"><div class="logo">Q</div><h1>Hi, I am Qwen-style AI</h1><p>Ask me anything — instant offline replies, no API key needed.</p><div class="sugs"><button class="sug" data-q="Write a Python function to check prime numbers">Python prime checker</button><button class="sug" data-q="Explain black holes like I am 5">Explain black holes simply</button><button class="sug" data-q="Tell me a joke">Tell me a joke</button><button class="sug" data-q="What can you do?">What can you do?</button></div></div>';
-    thread.querySelectorAll('.sug').forEach(b=>b.onclick=()=>{input.value=b.dataset.q;send();});
-  } else {
-    c.messages.forEach(m=>{const row=document.createElement('div');row.className='msg '+(m.role==='user'?'user':'ai');row.innerHTML='<div class="avatar">'+(m.role==='user'?'🧑':'Q')+'</div><div><div class="bubble">'+fmt(m.text)+'</div><div class="meta"><span>'+m.time+'</span><span>• '+(m.model||currentModel)+'</span></div></div>';thread.appendChild(row);});
-  }
-  thread.scrollTop=thread.scrollHeight;renderChips();
-}
-function renderChips(){const items=['Summarize this','Give an example','Explain simply','Write code'];$('chips').innerHTML='';if(!active().messages.length)return;items.forEach(t=>{const b=document.createElement('button');b.className='chip';b.textContent=t;b.onclick=()=>{input.value=t;send();};$('chips').appendChild(b);});}
-function mockReply(q){
-  const s=q.toLowerCase().trim();
-  const nm=q.match(/my name is (\w+)/i);if(nm){userName=nm[1];return 'Nice to meet you, **'+userName+'**! What next?';}
-  if(/^(hi|hello|hey|yo|good (morning|afternoon|evening))\b/.test(s))return 'Hello! I am your Qwen-style assistant on **['+currentModel+']** — fully offline. Ask me to explain, code, or brainstorm.';
-  if(s.includes('who are you'))return 'I am a **Qwen-style AI chatbot** demo on **['+currentModel+']** — single index.html with built-in mock engine.';
-  if(s.includes('what can you do')||s.includes('help'))return 'I can demo offline:\n- Answer questions\n- Write code (try "write python quicksort")\n- Math (try "12 * 18 + 5")\n- Jokes, time/date, explanations';
-  if(s.includes('time')||s.includes('date')||s.includes('today'))return '📅 Right now it is **'+new Date().toLocaleString()+'**.';
-  if(s.includes('joke'))return '😂 Why do programmers hate nature? Too many bugs!';
-  if(s.includes('weather'))return 'I cannot fetch live weather offline — tell me your city + plan and I will help you prepare.';
-  if(s.includes('black hole'))return 'Imagine space is a trampoline. A **black hole** is a super-heavy ball making a hole so deep not even light can climb out!';
-  if(s.includes('prime')||s.includes('python'))return 'Python prime checker:\n\n```python\ndef is_prime(n):\n    if n < 2: return False\n    for i in range(2,int(n**0.5)+1):\n        if n%i==0: return False\n    return True\n```';
-  if(s.includes('quicksort')||s.includes('sort'))return 'Quicksort:\n\n```python\ndef quicksort(a):\n    if len(a)<=1: return a\n    p=a[len(a)//2]\n    return quicksort([x for x in a if x<p])+[x for x in a if x==p]+quicksort([x for x in a if x>p])\n```';
-  if(/\d+\s*[+\-*/]\s*\d+/.test(s)){try{const expr=q.replace(/[^0-9+\-*/(). %]/g,'');const v=Function('"use strict";return('+expr+')')();return '🧮 **'+expr+' = '+v+'**';}catch(e){}}
-  msgCount++;return 'Got it: "'+q.slice(0,140)+'" ['+currentModel+' demo #'+msgCount+']. I can explain it, give an example, or turn it into code — which one?';
-}
-function now(){return new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});}
-async function send(){
-  const text=input.value.trim();if(!text||streaming)return;
-  const c=active();c.messages.push({role:'user',text,time:now(),model:currentModel});
-  if(c.title==='New conversation')c.title=text.slice(0,42);
-  input.value='';renderList();renderThread();
-  streaming=true;$('sendBtn').textContent='⏹';
-  const row=document.createElement('div');row.className='msg ai';row.innerHTML='<div class="avatar">Q</div><div><div class="bubble typing"><span></span><span></span><span></span></div></div>';thread.appendChild(row);thread.scrollTop=thread.scrollHeight;
-  await new Promise(r=>setTimeout(r,600));
-  const full=mockReply(text);let shown='';const words=full.split(/(\s+)/);
-  row.querySelector('.bubble').classList.remove('typing');row.querySelector('.bubble').innerHTML='';
-  for(let w of words){shown+=w;row.querySelector('.bubble').innerHTML=fmt(shown);thread.scrollTop=thread.scrollHeight;await new Promise(r=>setTimeout(r,25));}
-  row.remove();streaming=false;$('sendBtn').textContent='➤';
-  c.messages.push({role:'assistant',text:full,time:now(),model:currentModel});renderList();renderThread();
-}
-$('sendBtn').onclick=()=>send();
-input.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();send();}});
-input.addEventListener('input',()=>{input.style.height='auto';$('count').textContent=input.value.length+' chars • offline mock engine';});
-renderModels();renderList();renderThread();
-if(window.innerWidth<760)$('sidebar').classList.add('hidden');
+var thread=document.getElementById('thread'),inp=document.getElementById('inp'),listEl=document.getElementById('list'),qEl=document.getElementById('q');
+var chats=[],aid=null;
+try{chats=JSON.parse(localStorage.getItem('fable_chats')||'[]')}catch(e){chats=[]}
+function save(){try{localStorage.setItem('fable_chats',JSON.stringify(chats))}catch(e){}}
+function uid(){return 'c'+Date.now().toString(36)+Math.floor(Math.random()*999)}
+function act(){return chats.find(function(c){return c.id===aid})}
+function newChat(){var c={id:uid(),title:'New conversation',messages:[],t:Date.now()};chats.unshift(c);aid=c.id;save();renderList();renderTh();return c}
+function renderList(){var q=(qEl.value||'').toLowerCase();listEl.innerHTML='';chats.filter(function(c){return c.title.toLowerCase().indexOf(q)>-1}).forEach(function(c){var d=document.createElement('div');d.className='item'+(c.id===aid?' on':'');var s=document.createElement('span');s.textContent=c.title;var x=document.createElement('button');x.textContent='\u00d7';x.onclick=function(e){e.stopPropagation();chats=chats.filter(function(v){return v.id!==c.id});if(aid===c.id){aid=chats[0]?chats[0].id:null;if(!aid){newChat();return}}save();renderList();renderTh()};d.onclick=function(){aid=c.id;renderList();renderTh();document.getElementById('side').classList.remove('open')};d.appendChild(s);d.appendChild(x);listEl.appendChild(d)});if(!chats.length)listEl.innerHTML='<div style="color:var(--mu);font-size:13px;padding:8px">No chats yet.</div>'}
+function addB(t,w){var r=document.createElement('div');r.className='msg'+(w==='u'?' rowu':'');if(w!=='u'){var a=document.createElement('div');a.className='av a';a.textContent='F';r.appendChild(a)}var b=document.createElement('div');b.className='bu '+w;b.textContent=t;r.appendChild(b);if(w==='u'){var u=document.createElement('div');u.className='av u';u.textContent='\u263a';r.appendChild(u)}thread.appendChild(r);thread.scrollTop=thread.scrollHeight;return b}
+function renderTh(){thread.innerHTML='';var c=act();if(!c||!c.messages.length){thread.innerHTML='<div class="wel"><div class="logo" style="margin:0 auto">F</div><h1>Kamusta! I am Fable AI \uD83D\uDC4B</h1><p>Your friendly personal assistant. Magtanong sa English o Tagalog.</p><div class="cards"><div class="card" data-q="Who are you?"><b>\u2728 Who are you?</b>Learn about me</div><div class="card" data-q="Sino ang gumawa sa iyo?"><b>\uD83C\uDDF5\uD83C\uDDED Sino gumawa sa iyo?</b>Kilalanin creator ko</div><div class="card" data-q="What can you do?"><b>\uD83D\uDCA1 What can you do?</b>See abilities</div><div class="card" data-q="Tell me a joke"><b>\uD83D\uDE02 Tell me a joke</b>Patawa tayo</div></div></div>';var els=thread.querySelectorAll('.card');els.forEach(function(el){el.onclick=function(){inp.value=el.getAttribute('data-q');send()}});return}c.messages.forEach(function(m){addB(m.t,m.w)})}
+function langOf(t){var s=t.toLowerCase();var m=['kamusta','kumusta','sino','ano ','bakit','paano','salamat','opo','hindi','ikaw','ako ','musta','magandang','tulong','saan','kailan','gumawa','oras','araw','patawa','kwento','mahal','ka '];for(var i=0;i<m.length;i++){if(s.indexOf(m[i])>-1)return 'tl'}return 'en'}
+function sm(ex){try{var e=ex.replace(/\u00d7/g,'*').replace(/\u00f7/g,'/').replace(/\^/g,'**').trim();if(!/^[\d\s\+\-\*\/\%\.\(\)]+$/.test(e))return null;if(!/\d/.test(e)||!/\+[\+\-\*\/\%]/.test(e.replace(/ /g,''))&&!/\+[\+\-\*\/\%]/.test(e)){}if(!/[\+\-\*\/\%]/.test(e))return null;var v=Function('"use strict";return('+e+')')();if(typeof v!=='number'||!isFinite(v))return null;return Math.round(v*1e6)/1e6}catch(err){return null}}
+function reply(raw){var tx=raw.trim(),low=tx.toLowerCase(),tl=langOf(tx)==='tl';
+var mc=low.replace(/^(compute|calculate|solve|kwentahin)\s*/,'').replace(/what is|magkano ang|ilan ang/g,'').trim();var mv=sm(mc);if(mv!==null)return tl?('Ang sagot ay '+mv+'. \uD83D\uDE0A May iba ka pa bang ipakwenta?'):('The answer is '+mv+'. \uD83D\uDE0A Anything else to solve?');
+if(/(anong oras|oras na|what time|current time|time now)/.test(low)){var n=new Date(),t=n.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}),d=n.toLocaleDateString([],{weekday:'long',month:'long',day:'numeric',year:'numeric'});return tl?('Ngayon ay '+t+', '+d+'. \u23F0'):("It's "+t+', '+d+'. \u23F0')}
+if(/(anong araw|anong petsa|what date|today|what day|anong date)/.test(low)){var dd=new Date().toLocaleDateString([],{weekday:'long',year:'numeric',month:'long',day:'numeric'});return tl?('Ngayon ay '+dd+'. \uD83D\uDCC5'):('Today is '+dd+'. \uD83D\uDCC5')}
+if(/(who made|who created|who built|creator|developer|sino.*gumawa|gumawa sa iyo|lumikha|sino.*creator)/.test(low))return tl?('Si Jay-Ar Lee Espiritu ang gumawa sa akin. \uD83E\uDD16 Siya ang creator at developer ko \u2014 binuo niya ako bilang si Fable AI para maging friendly personal assistant mo.'):('I was created by Jay-Ar Lee Espiritu. \uD83E\uDD16 He is my creator and developer \u2014 he built me as Fable AI to be your friendly personal assistant.');
+if(/(who are you|sino ka|ano ka|your name|pangalan mo|introduce|pakilala)/.test(low))return tl?('Ako si Fable AI! \uD83D\uDC4B Friendly personal assistant mo \u2014 parang si Muse. Tutulong ako sumagot, magpaliwanag, mag-solve ng math, magbigay ng ideas, o makipagkwentuhan. Anong maitutulong ko ngayon?'):("I'm Fable AI! \uD83D\uDC4B Your friendly personal assistant \u2014 like Muse. I answer questions, explain things, solve math, share ideas, or just chat. What can I do for you today?");
+if(/^(hi|hello|hey|yo|kamusta|kumusta|musta|magandang|good (morning|afternoon|evening)|greetings)/.test(low)){if(/magandang umaga|good morning/.test(low))return tl?'Magandang umaga din! \u2600\uFE0F Kamusta ka? Anong plano mo ngayon?':'Good morning! \u2600\uFE0F How are you today?';if(/magandang hapon|good afternoon/.test(low))return 'Magandang hapon din! \uD83C\uDF25 Kamusta ang araw mo?';if(/magandang gabi|good evening/.test(low))return tl?'Magandang gabi din! \uD83C\uDF19 Nandito lang ako kung kailangan mo.':'Good evening! \uD83C\uDF19 I am here if you need anything.';return tl?'Hello! \uD83D\uDC4B Kamusta ka? Magtanong ka lang sa English o Tagalog.':'Hello! \uD83D\uDC4B How are you? Ask me anything in English or Tagalog.'}
+if(/(how are you|kamusta ka|musta ka|how r u|how are u)/.test(low))return tl?'Mabuti naman ako, salamat! \uD83D\uDE0A Ikaw, kamusta ka? May maitutulong ba ako?':"I'm doing great, thanks! \uD83D\uDE0A How about you? What can I help with?";
+if(/(thank|salamat|thanks|\bty\b)/.test(low))return tl?'Walang anuman! \uD83D\uDE0A Masaya akong makatulong. May iba ka pang tanong?':"You're welcome! \uD83D\uDE0A Happy to help. Anything else?";
+if(/(joke|patawa|funny|nakakatawa|magpatawa)/.test(low)){var en=["Why don't programmers like nature? Too many bugs. \uD83D\uDC1B\uD83D\uDE02","Why did the computer catch a cold? It left its Windows open! \uD83D\uDCBB","I told my laptop a joke... it cracked up. \uD83D\uDE05"],tj=["Bakit malungkot ang calculator? Lagi siyang minu-minus! \uD83D\uDE02","Anong sabi ng kape sa asukal? Ikaw ang nagpapatamis ng buhay ko! \u2615\uFE0F","Bakit hindi nag-aaway ang keyboard at mouse? Kasi click sila! \uD83D\uDE04"],p=tl?tj:en;return p[Math.floor(Math.random()*p.length)]+(tl?' Gusto mo pa ng isa?':' Want another one?')}
+if(/(what can you do|help|tulong|kaya mo|abilities|features)/.test(low))return tl?'Marami akong kayang gawin! \uD83D\uDCA1\n\u2022 Sumagot at magpaliwanag\n\u2022 Mag-solve ng math (hal. 12*8+5)\n\u2022 Sabihin ang oras at petsa\n\u2022 Mag-joke at magbigay ng ideas\n\u2022 Makipagkwentuhan\n\nSubukan: Sino ka? o 12*15-4':"Here's what I can do! \uD83D\uDCA1\n\u2022 Answer and explain\n\u2022 Solve math (e.g. 12*8+5)\n\u2022 Tell time and date\n\u2022 Jokes and ideas\n\u2022 Chat with you\n\nTry: Who are you? or 12*15-4";
+if(/(love you|mahal kita|malungkot|lonely|sad|depress|crush)/.test(low))return tl?'Salamat sa pag-share. \uD83E\uDD17 Kung malungkot ka, nandito ako para makinig. Gusto mong pag-usapan o gusto mo ng joke pampagaan?':"Thanks for sharing. \uD83E\uDD17 If you're feeling down, I'm here to listen. Talk about it or want a cheering joke?";
+if(low.length<25&&low.indexOf('?')<0)return tl?('Gets ko \u2014 "'+tx='". \uD83D\uDE42 Kwentuhan mo pa ako nang konti? Nagtatanong ka ba, kailangan ng advice, o kwentuhan lang?'):('I hear you \u2014 "'+tx='". \uD83D\uDE42 Tell me a bit more? Are you asking something, need advice, or just chatting?');
+return tl?('Magandang tanong: "'+tx='". \uD83E\uDD14 Bilang assistant mo, mas matutulungan kita kung may konting detalye. Kaya kong magpaliwanag, mag-solve ng math, magbigay ng ideas, o mag-joke. Ano ang gusto mong subukan?'):('Great question: "'+tx='". \uD83E\uDD14 As your assistant, I can go deeper with a little more detail. I can explain, solve math, brainstorm, or share a joke. Which shall we try?')}
+function send(){var v=inp.value.trim();if(!v)return;var c=act();if(!c)c=newChat();if(!c.messages.length)c.title=v.slice(0,42);c.messages.push({w:'u',t:v});inp.value='';inp.style.height='auto';save();renderList();renderTh();var b=addB('', 'a');var tp=document.createElement('span');tp.className='typ';tp.innerHTML='<i></i><i></i><i></i>';b.appendChild(tp);document.getElementById('st').textContent='Fable is typing...';setTimeout(function(){var r=reply(v);c.messages.push({w:'a',t:r});save();renderTh();document.getElementById('st').textContent='Local assistant \u2022 English / Tagalog \u2022 online'},700+Math.random()*700)}
+document.getElementById('send').onclick=send;
+inp.addEventListener('keydown',function(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();send()}});
+inp.addEventListener('input',function(){inp.style.height='auto';inp.style.height=Math.min(inp.scrollHeight,140)+'px'});
+document.getElementById('newBtn').onclick=function(){newChat();document.getElementById('side').classList.remove('open')};
+document.getElementById('menu').onclick=function(){document.getElementById('side').classList.toggle('open')};
+document.getElementById('clearBtn').onclick=function(){chats=[];save();newChat()};
+qEl.addEventListener('input',renderList);
+if(!chats.length)newChat();else{aid=chats[0].id;renderList();renderTh()}
 </script>
 </body>
 </html>
