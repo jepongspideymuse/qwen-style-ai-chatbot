@@ -1,5 +1,7 @@
 # Qwen-Style AI Chatbot
 
+> This is the official repo of Project Sampaguita.
+
 A complete, working AI chatbot web app inspired by chat.qwen.ai — in a single `index.html` file.
 
 No build step. No API key. No backend. Just open it and chat.
