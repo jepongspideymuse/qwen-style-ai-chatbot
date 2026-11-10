@@ -34,7 +34,7 @@ No build step. No API key. No backend. Just open it and chat.
 **Composer**
 - Auto-growing textarea (Enter to send, Shift+Enter for newline)
 - Send / Stop button
-- Character counter
+- Live character counter (`#count` below the input): always shows the current input length as `N characters`, updates as you type, and resets to `0 characters` after send
 - Quick suggestion chips
 
 **Local mock reply engine**
