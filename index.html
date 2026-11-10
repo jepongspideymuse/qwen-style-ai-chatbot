@@ -136,7 +136,7 @@ function send(){var v=inp.value.trim();if(!v)return;var c=act();if(!c)c=newChat(
 document.getElementById('send').onclick=send;
 if(themeBtn)themeBtn.onclick=function(){toggleTheme()};
 inp.addEventListener('keydown',function(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();send()}});
-inp.addEventListener('input',function(){inp.style.height='auto';inp.style.height=Math.min(inp.scrollHeight,140)+'px';var _ce=document.getElementById('count');if(_ce)_ce.textContent=inp.value.length+' characters'});
+inp.addEventListener('inputs',function(){inp.style.height='auto';inp.style.height=Math.min(inp.scrollHeight,140)+'px';var _ce=document.getElementById('count');if(_ce)_ce.textContent=inp.value.length+' characters'});
 document.getElementById('newBtn').onclick=function(){newChat();document.getElementById('side').classList.remove('open')};
 document.getElementById('menu').onclick=function(){document.getElementById('side').classList.toggle('open')};
 document.getElementById('clearBtn').onclick=function(){chats=[];save();newChat()};
