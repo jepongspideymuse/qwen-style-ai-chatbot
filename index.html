@@ -77,6 +77,10 @@ textarea{flex:1;background:transparent;border:0;outline:none;color:var(--tx);res
 var thread=document.getElementById('thread'),inp=document.getElementById('inp'),listEl=document.getElementById('list'),qEl=document.getElementById('q');
 var chats=[],aid=null;
 try{chats=JSON.parse(localStorage.getItem('fable_chats')||'[]')}catch(e){chats=[]}
+var themeBtn=document.getElementById('themeBtn');
+function getTheme(){try{return localStorage.getItem('fable_theme')||'dark'}catch(e){return 'dark'}}
+function applyTheme(t){document.documentElement.setAttribute('data-theme',t);if(themeBtn)themeBtn.textContent=(t==='light'?'☀️':'🌙');try{localStorage.setItem('fable_theme',t)}catch(e){}}
+applyTheme(getTheme());
 function save(){try{localStorage.setItem('fable_chats',JSON.stringify(chats))}catch(e){}}
 function uid(){return 'c'+Date.now().toString(36)+Math.floor(Math.random()*999)}
 function act(){return chats.find(function(c){return c.id===aid})}
